@@ -10,20 +10,34 @@ import {
 
 // POST to add a visit
 router.post("/visit/:url", async (req, res) => {
-  const result = await addVisit(req.params.url);
-  res.status(201).json({
-    success: true,
-    payload: result,
-  });
+  try {
+    const result = await addVisit(req.params.url);
+    res.status(201).json({
+      success: true,
+      payload: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
 
 // POST to add an email
 router.post("/email/:email", async (req, res) => {
-  const result = await addEmail(req.params.email);
-  res.status(201).json({
-    success: true,
-    payload: result,
-  });
+  try {
+    const result = await addEmail(req.params.email);
+    res.status(201).json({
+      success: true,
+      payload: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
 
 
