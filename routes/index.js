@@ -43,7 +43,7 @@ router.post("/email/:email", async (req, res) => {
     if (success){
       lastEmailSent = Date.now();
       return res.status(201).json({
-        success: success,
+        success: true,
         message: "Email sent successfully",
       });
     } else {
