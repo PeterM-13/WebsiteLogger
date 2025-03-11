@@ -18,19 +18,40 @@ import nodemailer from 'nodemailer';
 //   }
 // });
 
+const EMAIL_COOLDOWN_PERIOD = 30000; // 30 seconds
+let lastEmailSent = 0;
+
 // POST to add an email
 router.post("/email/:email", async (req, res) => {
-  try {
+    // Validate email
+    const email = req.params.email;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email address",
+      });
+    }
+    if(Date.now() - lastEmailSent < EMAIL_COOLDOWN_PERIOD){
+      return res.status(429).json({
+        success: false,
+        message: "Too many requests, please wait a minute before trying again",
+      });
+    }
     const success = send_email("New Pre-Order", `'${req.params.email}' has pre-ordered a new smart stick!`);
-    res.status(201).json({
-      success: success,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+    if (success){
+      lastEmailSent = Date.now();
+      return res.status(201).json({
+        success: success,
+        message: "Email sent successfully",
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Error sending email",
+      });
+    }
 });
 
 
